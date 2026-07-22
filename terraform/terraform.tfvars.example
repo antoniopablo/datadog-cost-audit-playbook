@@ -1,0 +1,4 @@
+aws_region      = "eu-west-1"
+datadog_api_key = "YOUR_DD_API_KEY"
+datadog_app_key = "YOUR_DD_APP_KEY"
+datadog_api_url = "https://api.datadoghq.eu/"

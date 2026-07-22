@@ -1,0 +1,20 @@
+#!/bin/bash
+set -e
+DD_API_KEY="${datadog_api_key}" DD_SITE="${datadog_site}" \
+  bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+
+# Every 2 minutes: emit metrics under a BRAND NEW service name.
+# After a day: ~720 "services", each with its own metric series.
+# The fix (PLAYBOOK §5): fixed DD_SERVICE, run-id only as a
+# low-retention log attribute, never a metric tag.
+cat > /opt/chaos_job.sh <<'JOBEOF'
+#!/bin/bash
+RUN_ID="job-$(date +%s)-$(head -c4 /dev/urandom | xxd -p)"
+for i in $(seq 1 10); do
+  echo -n "batch.records.processed:$((RANDOM % 500))|c|#service:$RUN_ID,job_run:$RUN_ID" \
+    > /dev/udp/127.0.0.1/8125
+  sleep 2
+done
+JOBEOF
+chmod +x /opt/chaos_job.sh
+echo "*/2 * * * * root /opt/chaos_job.sh" > /etc/cron.d/chaos-job

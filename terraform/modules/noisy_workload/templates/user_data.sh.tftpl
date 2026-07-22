@@ -1,0 +1,72 @@
+#!/bin/bash
+set -e
+# Install Datadog agent
+DD_API_KEY="${datadog_api_key}" DD_SITE="${datadog_site}" \
+  bash -c "$(curl -L https://install.datadoghq.com/scripts/install_script_agent7.sh)"
+
+# Enable DogStatsD non-local traffic (defaults are fine locally)
+systemctl restart datadog-agent
+
+# The cardinality bomb: every loop emits the SAME logical metric
+# with a UNIQUE request_id tag -> new series every iteration.
+cat > /opt/noisy.py <<'PYEOF'
+import random, socket, string, time, uuid
+
+sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+host = socket.gethostname()
+endpoints = ["/api/users", "/api/orders", "/api/search", "/healthz"]
+
+while True:
+    rid = str(uuid.uuid4())                      # <- the mistake
+    user = "user-" + "".join(random.choices(string.digits, k=6))  # <- also the mistake
+    ep = random.choice(endpoints)
+    ms = random.randint(5, 900)
+    # checkout.request.duration tagged by request_id/user_id/hostname:
+    # cardinality = requests x users x hosts = unbounded
+    sock.sendto(
+        f"checkout.request.duration:{ms}|ms|#request_id:{rid},user_id:{user},endpoint:{ep},host_name:{host}".encode(),
+        ("127.0.0.1", 8125),
+    )
+    sock.sendto(
+        f"checkout.request.count:1|c|#request_id:{rid},user_id:{user},endpoint:{ep}".encode(),
+        ("127.0.0.1", 8125),
+    )
+    time.sleep(0.5)
+PYEOF
+
+cat > /etc/systemd/system/noisy.service <<'UNITEOF'
+[Unit]
+Description=High-cardinality metric emitter (demo anti-pattern)
+After=datadog-agent.service
+[Service]
+ExecStart=/usr/bin/python3 /opt/noisy.py
+Restart=always
+[Install]
+WantedBy=multi-user.target
+UNITEOF
+
+systemctl daemon-reload
+systemctl enable --now noisy
+
+# ANTI-PATTERN 2 feeder: spam debug logs so the unfiltered index fills up
+mkdir -p /etc/datadog-agent/conf.d/noisy_logs.d
+cat > /etc/datadog-agent/conf.d/noisy_logs.d/conf.yaml <<'LOGEOF'
+logs:
+  - type: file
+    path: /var/log/noisy-app.log
+    service: noisy-app
+    source: python
+LOGEOF
+
+cat > /opt/logspam.sh <<'SHEOF'
+#!/bin/bash
+while true; do
+  echo "$(date -Iseconds) DEBUG healthcheck ok latency=$((RANDOM % 20))ms" >> /var/log/noisy-app.log
+  sleep 1
+done
+SHEOF
+chmod +x /opt/logspam.sh
+nohup /opt/logspam.sh &
+
+sed -i 's/# logs_enabled: false/logs_enabled: true/' /etc/datadog-agent/datadog.yaml
+systemctl restart datadog-agent
