@@ -53,11 +53,11 @@ The demo deploys a small EKS-free setup (EC2 + containers) that intentionally co
 
 I'm Antonio García, SRE based in Madrid. I worked with Datadog's platform from the inside and now run observability cost audits and migrations for companies across Europe.
 
-- Contact: garciloping@hotmail.com
+- Contact: antoniopablo.garlopez@hotmail.com
 - Malt: https://en.malt.es/profile/antoniogarcia1
 - Upwork: https://www.upwork.com/freelancers/~0100bc94cc4706900c
 
-**If your Datadog bill makes your CFO nervous, I do this exact audit on production environments — [email me](mailto:garciloping@hotmail.com).**
+**If your Datadog bill makes your CFO nervous, I do this exact audit on production environments — [email me](mailto:antoniopablo.garlopez@hotmail.com).**
 
 ## License
 
