@@ -51,7 +51,7 @@ The demo deploys a small EKS-free setup (EC2 + containers) that intentionally co
 
 ## Who am I
 
-I'm Antonio García, SRE based in Madrid. I worked with Datadog's platform from the inside and now run observability cost audits and migrations for companies across Europe.
+I'm Antonio García, an ex-Datadog SRE based in Madrid. I've seen how observability pricing works from the inside, and I now run cost audits and migrations for companies across Europe — most recently leading a company-wide migration to Datadog for a global e-commerce platform.
 
 - Contact: antoniopablo.garlopez@hotmail.com
 - Malt: https://en.malt.es/profile/antoniogarcia1
