@@ -1,6 +1,6 @@
 # Datadog Cost Audit Playbook
 
-**A practical, reproducible playbook for finding the 30–60% most Datadog customers overpay — written by an ex-Datadog SRE.**
+**A practical, reproducible playbook for finding where your Datadog money leaks — written by a former Datadog Solutions Engineer.**
 
 Most Datadog bills don't grow because you're monitoring more. They grow because of silent waste: high-cardinality custom metrics nobody queries, logs indexed by default that nobody reads, APM traces sampled at 100% "just in case", and hosts reporting from environments that died months ago.
 
@@ -12,15 +12,15 @@ This repo contains:
 
 ## The 7 places Datadog money leaks
 
-| # | Leak | Typical share of waste | Fix difficulty |
-|---|------|----------------------|----------------|
-| 1 | High-cardinality custom metrics (pod name, request ID, user ID as tags) | 20–40% | Medium |
-| 2 | Logs indexed by default with no exclusion filters | 15–30% | Easy |
-| 3 | APM ingestion at 100% head-based sampling | 10–20% | Easy |
-| 4 | Zombie hosts & duplicated agents (ASGs, short-lived CI runners) | 5–15% | Easy |
-| 5 | Custom metrics from CronJobs / Jobs creating a new "service" per run | 5–15% | Medium |
-| 6 | Unused dashboards' metrics still being ingested at full granularity | 5–10% | Medium |
-| 7 | Retention: everything on 15-month metrics / 30-day log indexes | 5–10% | Easy |
+| # | Leak | Usual impact | Fix difficulty |
+|---|------|--------------|----------------|
+| 1 | High-cardinality custom metrics (pod name, request ID, user ID as tags) | High | Medium |
+| 2 | Logs indexed by default with no exclusion filters | High | Easy |
+| 3 | APM ingestion at 100% head-based sampling | Medium | Easy |
+| 4 | Zombie hosts & duplicated agents (ASGs, short-lived CI runners) | Medium | Easy |
+| 5 | Custom metrics from CronJobs / Jobs creating a new "service" per run | Medium | Medium |
+| 6 | Unused dashboards' metrics still being ingested at full granularity | Low | Medium |
+| 7 | Retention: everything on 15-month metrics / 30-day log indexes | Low | Easy |
 
 ## Quick start (demo environment)
 
@@ -47,11 +47,11 @@ The demo deploys a small EKS-free setup (EC2 + containers) that intentionally co
 | APM ingested spans | 100% | 15% + error/latency retention filters | −85% |
 | Estimated monthly cost (demo scale) | $412 | $118 | **−71%** |
 
-> Real-world orgs won't hit −71% (the demo is deliberately pathological), but 30–60% is the consistent range I find in production environments.
+> Real-world orgs won't hit −71%: the demo is deliberately pathological. How much a real organisation can save depends on its usage and its contract, so the playbook starts by measuring a baseline before recommending any cut.
 
 ## Who am I
 
-I'm Antonio García, an ex-Datadog SRE based in Madrid. I've seen how observability pricing works from the inside, and I now run cost audits and migrations for companies across Europe — most recently leading a company-wide migration to Datadog for a global e-commerce platform.
+I'm Antonio García, a former Datadog Solutions Engineer (2021–2023), now an SRE / observability freelancer based in Spain. I've seen how Datadog pricing works from the inside, and I help teams review their Datadog costs and run migrations — most recently leading a company-wide migration to Datadog for a global e-commerce platform.
 
 - Contact: antoniopablo.garlopez@hotmail.com
 - Malt: https://en.malt.es/profile/antoniogarcia1

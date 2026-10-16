@@ -67,7 +67,7 @@ Cost attribution requires 3 tags everywhere: `team`, `service`, `env`. Enforce r
 ## 7. Retention & commitment review
 
 - Metrics you only dashboard weekly don't need 15-month full granularity.
-- Move from on-demand to annual commit for stable baseline usage (typical 20–30% discount), keep burst on on-demand.
+- Move from on-demand to annual commit for stable baseline usage (annual rates are lower than on-demand — check the gap on Datadog's pricing page and in your contract), keep burst on on-demand.
 - Re-run this audit before every renewal: negotiate with the cleaned-up numbers, not the inflated ones.
 
 ---
